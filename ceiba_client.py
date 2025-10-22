@@ -90,6 +90,8 @@ def api_post(endpoint: str, json: dict):
 
     return True, payload, None
 
+
+### Juanito
 @st.cache_data(ttl=300)
 def listar_grupos():
     ok, payload, err = api_get("basic/groups", params={'key': st.session_state.get("api_key")})
@@ -107,6 +109,8 @@ def listar_grupos():
 
     return out, None
 
+
+###Juanito
 @st.cache_data(ttl=300)
 def listar_dispositivos_simplificado(groupid: str | None = None):
     """
@@ -144,7 +148,7 @@ def listar_dispositivos_simplificado(groupid: str | None = None):
 
 #Modificaciones Emiliano
 
-
+###Emiliano
 @st.cache_data(ttl=300)
 def grupo_por_defecto():
     """
@@ -158,7 +162,7 @@ def grupo_por_defecto():
     g0 = grupos[0]
     return g0.get("groupid"), g0.get("groupname"), None
 
-
+###Opciones de grupos
 @st.cache_data(ttl=300)
 def opciones_de_grupos():
     """
@@ -176,7 +180,7 @@ def opciones_de_grupos():
     }
     return groupnames, map_name_to_id, None
 
-
+###Emiliano
 @st.cache_data(ttl=300)
 def listar_dispositivos_por_grupo(groupid: str):
     """
@@ -193,7 +197,7 @@ def listar_dispositivos_por_grupo(groupid: str):
     filtrados = [d for d in dispositivos if d.get("groupid") == groupid]
     return filtrados, None
 
-
+###Emiliano
 @st.cache_data(ttl=300)
 def placas_y_mapas_por_grupo(groupid: str):
     """
@@ -221,7 +225,7 @@ def placas_y_mapas_por_grupo(groupid: str):
 
     return placas, map_placa_to_terid, map_terid_to_placa, None
 
-
+####Emiliano
 @st.cache_data(ttl=300)
 def terids_por_grupo(groupid: str):
     """

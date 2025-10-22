@@ -19,14 +19,14 @@ st.set_page_config(
 cbc.login()
 cbc.require_login()
 
-# 1) Sidebar de navegación (tu menú)
-util.navegacion()
-
-# 2) Sidebar de grupos (con prefijo propio para no chocar con otras páginas)
+# 1) Sidebar de grupos (con prefijo propio para no chocar con otras páginas)
 gid, gname, terids_del_grupo, err_sidebar = util.sidebar_grupos(key_prefix="uni")
 if err_sidebar:
     st.warning(err_sidebar)
     st.stop()
+
+# 2) Sidebar de navegación (tu menú)
+util.navegacion()
 
 # ------------------ Vista principal ------------------
 st.title('INSITRA ANALYTICS: Unidades 🚍')
@@ -119,7 +119,75 @@ if pfig is None or pud_plot.empty:
 else:
     st.plotly_chart(pfig,use_container_width=True)
     with st.expander('Ver los datos mostrados en la gráfica'):
-        st.dataframe(pud,use_container_width=True)
+        st.dataframe(pud_plot,use_container_width=True)
 
+
+#Kilometraje
+
+
+sel_placas_k = st.multiselect("Unidades", options=placas, key="uni_ms_unidades_k")
+
+# Si no se elige nada, tomamos TODAS las del grupo
+if sel_placas_k:
+    sel_terids = [map_placa_to_terid[p] for p in sel_placas_k]
+else:
+    sel_terids = [map_placa_to_terid[p] for p in placas]
+
+# ---------- Rango de fechas ----------
+date_presetk = date.today() - timedelta(days=6)
+
+c1, c2 = st.columns(2)
+with c1:
+    iniciok = st.date_input('Inicio', date_presetk, key='uni_inicio_k')
+with c2:
+    finalk = st.date_input('Final', key='uni_final_k')
+
+if iniciok > finalk:
+    st.error('La fecha final debe ser más reciente que la fecha de inicio')
+    st.stop()
+
+
+rango_fechask = (iniciok,finalk)
+
+kilometraje = {
+        "terid": terids_del_grupo,
+        "starttime": f"{iniciok} 00:00:00",
+        "endtime": f"{finalk} 23:59:59"
+        }
+
+ok, payload, err = cbc.api_post("basic/mileage/count", json=kilometraje)
+if not ok:
+    st.error(err or "Error consultando CEIBA")
+    st.stop()
+
+# ---------- Procesamiento y vista ----------
+kilometraje = pd.DataFrame(payload.get('data') or [])
+if conteo.empty:
+    st.warning("No hay datos para los filtros seleccionados.")
+    st.stop()
+
+kud = pcd.construir_kud(kilometraje)
+
+if "Unidad" in kud.columns:
+    kud["Unidad"] = kud["Unidad"].astype(str).map(map_terid_to_placa).fillna(kud["Unidad"])
+elif "terid" in kud.columns:
+    kud["terid"] = kud["terid"].astype(str).map(map_terid_to_placa).fillna(kud["terid"])
+    # (opcional) si prefieres que la columna final se llame 'Unidad':
+    kud = kud.rename(columns={"terid": "Unidad"})
+
+kfig, kud_plot = graph.kilometros_unidad_dia(
+    df = kud,
+    unidades = sel_placas_k,
+    rango_fechas = rango_fechask,
+    valor = 'Kilometraje',
+)
+
+#Excepsiones
+if kfig is None or kud_plot.empty:
+    st.warning('No hay datos de las fechas seleccionadas')
+else:
+    st.plotly_chart(kfig,use_container_width=True)
+    with st.expander('Ver los datos mostrados en la gráfica'):
+        st.dataframe(kud_plot,use_container_width=True)
 
 
