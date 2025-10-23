@@ -4,3 +4,5 @@ showSidebarNavigation = false
 [theme]
 base = 'dark'
 primaryColor = '#651c44'
+
+

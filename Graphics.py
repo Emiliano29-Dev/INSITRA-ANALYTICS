@@ -132,6 +132,7 @@ def pasajeros_por_unidad_dia_promedio(
         y = valor,
         markers=True,
         title = f"{valor} por día.",
+        color_discrete_sequence=["#D73E10"]
     )
 
     fig.update_layout(

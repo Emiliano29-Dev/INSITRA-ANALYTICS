@@ -20,7 +20,7 @@ from folium.plugins import HeatMap
 
 st.set_page_config(
     page_title='Insitra Analytics: Unidades',
-    page_icon='Recursos_visuales/insitra imagotipo.png',
+    page_icon='Recursos_visuales/insitra_logo.png',
     layout='wide',
 )
 
@@ -42,7 +42,7 @@ st.title('INSITRA ANALYTICS: Ruta 🚦')
 st.header('Mapa de calor')
 
 # ---------- Rango de fechas ----------
-date_presetk = date.today() - timedelta(days=6)
+date_presetk = date.today()
 
 c1, c2 = st.columns(2)
 with c1:
@@ -83,7 +83,6 @@ conteo = conteo.rename(columns={
     'on':'on',
 })
 
-
 # ---- KPIs ARRIBA (placeholders) ----
 st.subheader("Resultados en la zona dibujada")
 kpi = st.container()
@@ -94,9 +93,18 @@ with kpi:
     m_pts = c3.empty()  # placeholder métrica Puntos
 
 # Valores iniciales (mientras no haya polígono dibujado)
-m_on.metric("Ascensos (on)", "—")
-m_off.metric("Descensos (off)", "—")
-m_pts.metric("Puntos dentro", "—")
+#Modificamos el tamaño de letra
+st.markdown("""
+    <style>
+    [data-testid = "stMetricLabel"] p{
+            font-size: 1.5rem;
+            }
+            <style>
+             """,unsafe_allow_html=True)
+
+m_on.metric("Ascensos", "—", border=True)
+m_off.metric("Descensos", "—", border=True)
+m_pts.metric("Eventos dentro del área", "—", border=True)
 
 # ----------------- TU PROCESAMIENTO -----------------
 # Asegura nombres y tipos
@@ -188,9 +196,9 @@ total_off = int(en_zona["off"].sum()) if not en_zona.empty else 0
 n_puntos  = len(en_zona)
 
 # ---- ACTUALIZAR KPIs (arriba) ----
-m_on.metric("Ascensos (on)", f"{total_on:,}")
-m_off.metric("Descensos (off)", f"{total_off:,}")
-m_pts.metric("Puntos dentro", f"{n_puntos:,}")
+m_on.metric("Ascensos", f"{total_on:,}", border=True)
+m_off.metric("Descensos", f"{total_off:,}", border=True)
+m_pts.metric("Eventos dentro del área", f"{n_puntos:,}", border=True)
 
 # (Opcional) tabla
 with st.expander("Ver puntos dentro de la zona"):

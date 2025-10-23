@@ -188,6 +188,7 @@ def construir_kipd(
     denom = kipd['Unidades Activas'].where(kipd['Unidades Activas'] != 0, 1)
     kipd['Promedio por unidad'] = (kipd['Kilometraje'] / denom).where(kipd['Unidades Activas'] != 0, 0)
     kipd['Promedio por unidad'] = kipd['Promedio por unidad'].round(0)
+    kipd['Kilometraje'] = kipd['Kilometraje'].round(0)
 
     # Orden
     kipd = kipd.sort_values('Dia', kind='stable')

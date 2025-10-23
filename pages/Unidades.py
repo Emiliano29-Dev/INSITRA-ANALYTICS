@@ -11,7 +11,7 @@ import graphics as graph
 
 st.set_page_config(
     page_title='Insitra Analytics: Unidades',
-    page_icon='Recursos_visuales/insitra imagotipo.png',
+    page_icon='Recursos_visuales/insitra_logo.png',
     layout='wide',
 )
 
